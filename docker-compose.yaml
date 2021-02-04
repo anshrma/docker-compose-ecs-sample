@@ -1,0 +1,67 @@
+x-aws-vpc: "vpc-FILL_ME"
+x-aws-logs_retention: 30
+x-aws-cloudformation:
+  Resources:
+    LoadBalancer:
+      Properties:
+        #Scheme: internal
+        Subnets:
+        - subnet-FILL_ME
+        - subnet-FILL_ME
+        # Certificates: 
+        #   - CertificateArn: "arn:aws:acm:certificate/123abc"
+        # Protocol: HTTPS
+    ProxyService:
+      Properties:
+        NetworkConfiguration:
+          AwsvpcConfiguration:
+            Subnets:
+            - subnet-FILL_ME
+            - subnet-FILL_ME
+
+services:
+  db:
+    image: mysql:8.0.19
+    command: '--default-authentication-plugin=mysql_native_password'
+    restart: always
+    secrets:
+      - db-password
+    volumes:
+      - db-data:/var/lib/mysql
+    networks:
+      - backnet
+    environment:
+      - MYSQL_DATABASE=example
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
+  backend:
+    build: 
+      context: ./backend
+    restart: always
+    secrets:
+      - db-password
+    # ports:
+    #   - 5000:5000
+    networks:
+      - backnet
+      - frontnet
+    depends_on:
+      - db
+  proxy:
+    build: 
+      context: ./proxy
+    restart: always
+    ports:
+      - 80:80
+    networks:
+      - frontnet
+    depends_on:
+      - backend
+volumes:
+  db-data:
+secrets:
+  db-password:
+    # This is mounted to /run/secrets/ onto the container using it
+    file: db/password.txt
+networks:
+  backnet:
+  frontnet:
