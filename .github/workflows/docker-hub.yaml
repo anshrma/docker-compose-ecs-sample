@@ -15,7 +15,6 @@ jobs:
         uses: actions/checkout@v2
       -
         name: Build and push backend
-        id: docker_build
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
@@ -26,7 +25,6 @@ jobs:
           tag_with_ref: true
       -
         name: Build and push proxy
-        id: docker_build
         uses: docker/build-push-action@v1
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
