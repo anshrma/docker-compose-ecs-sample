@@ -31,7 +31,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           push: true
-          tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:${GITHUB_SHA}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{GITHUB_SHA}}
       # -
       #   name: Build and push backend
       #   uses: docker/build-push-action@v1
