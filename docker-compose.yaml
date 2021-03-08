@@ -1,24 +1,3 @@
-x-aws-vpc: "vpc-FILL_ME"
-x-aws-logs_retention: 30
-x-aws-cloudformation:
-  Resources:
-    LoadBalancer:
-      Properties:
-        #Scheme: internal
-        Subnets:
-        - subnet-FILL_ME
-        - subnet-FILL_ME
-        # Certificates: 
-        #   - CertificateArn: "arn:aws:acm:certificate/123abc"
-        # Protocol: HTTPS
-    FrontendService:
-      Properties:
-        NetworkConfiguration:
-          AwsvpcConfiguration:
-            Subnets:
-            - subnet-FILL_ME
-            - subnet-FILL_ME
-
 services:
   db:
     image: mysql:8.0.19
