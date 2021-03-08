@@ -11,7 +11,7 @@ x-aws-cloudformation:
         # Certificates: 
         #   - CertificateArn: "arn:aws:acm:certificate/123abc"
         # Protocol: HTTPS
-    ProxyService:
+    FrontendService:
       Properties:
         NetworkConfiguration:
           AwsvpcConfiguration:
@@ -46,9 +46,9 @@ services:
       - frontnet
     depends_on:
       - db
-  proxy:
+  frontend:
     build: 
-      context: ./proxy
+      context: ./frontend
     restart: always
     ports:
       - 80:80
