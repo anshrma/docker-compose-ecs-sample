@@ -1,6 +1,6 @@
 FROM python:3.8-alpine
 WORKDIR /code
-COPY ./backend/ /code/
+COPY ./ /code/
 
 RUN ls -ltr /code
 RUN pip install -r requirements.txt
