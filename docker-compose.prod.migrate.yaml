@@ -1,0 +1,55 @@
+# x-aws-vpc: "vpc-FILL_ME"
+# x-aws-logs_retention: 30
+# x-aws-cloudformation:
+#   Resources:
+#     LoadBalancer:
+#       Properties:
+#         #Scheme: internal
+#         Subnets:
+#         - subnet-FILL_ME
+#         - subnet-FILL_ME
+#         # Certificates: 
+#         #   - CertificateArn: "arn:aws:acm:certificate/123abc"
+#         # Protocol: HTTPS
+#     FrontendService:
+#       Properties:
+#         NetworkConfiguration:
+#           AwsvpcConfiguration:
+#             Subnets:
+#             - subnet-FILL_ME
+#             - subnet-FILL_ME
+            
+services:
+  frontend:
+    image: ${DOCKER_HUB_ID}/docker-compose-ecs-sample_frontend:latest
+    x-aws-pull_credentials: ${DOCKER_PULL_SECRETS_MANAGER}
+  backend:
+    image: ${DOCKER_HUB_ID}/docker-compose-ecs-sample_backend:latest
+    x-aws-pull_credentials: ${DOCKER_PULL_SECRETS_MANAGER}
+    logging:
+      options:
+        mode: non-blocking # Default is blocking
+        max-buffer-size: 5m # Default is 1min
+    # This enables task level IAM role for the service
+    # x-aws-role:
+    #     Version: '2012-10-17'
+    #     Statement:
+    #     - Effect: Allow
+    #       Action: sqs:*
+    #       Resource: FILL_ME_ARN_OF_SQS
+# secrets:
+#   db-password:
+#     name: ${DOCKER_PULL_SECRETS_MANAGER}
+#     external: true
+  
+  
+#Above overrides mysecrets
+# $ cat creds.json
+# {
+#   "username":"Some secret name",
+#   "password":"some secret credential"
+# }
+
+# Now create it using following 
+# $ docker secret create pullcred /path/to/creds.json --context GIVE_ECS_CONTEXT_NAME
+# arn:aws:secretsmanager:eu-west-3:xxx:secret:pullcred
