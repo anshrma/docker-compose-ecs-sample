@@ -5,3 +5,8 @@ services:
         - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
         - MY_SQL_HOST=FILL_ME_RDS_HOSE_NAME_WITHOUT_PORT
         - MY_SQL_USER=FILL_ME_RDS_USERNAME
+
+secrets:
+  db-password:
+    name: ${RDS_DB_SECRET_ARN}
+    external: true

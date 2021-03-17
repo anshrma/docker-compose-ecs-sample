@@ -1,0 +1,53 @@
+services:
+  backend:
+    cap_add: 
+      - SYS_PTRACE
+    deploy:
+      replicas: 2
+      # resources:
+      #   limits:
+      #     memory: 2Gb
+      #     cpus: '0.5'
+      x-aws-autoscaling:
+          min: 1
+          max: 10 #required
+          cpu: 75
+
+x-aws-cloudformation:
+  Transform: AWS::SecretsManager-2020-07-23
+  Outputs:
+    MySQL:
+      Description: RDSInstance Endpoint
+      Value: 
+        Fn::GetAtt : 
+        - MySQL
+        - Endpoint.Address
+  Resources:
+    DBSecurityGroup:
+      Type: AWS::RDS::DBSecurityGroup
+      Properties: 
+        DBSecurityGroupIngress: 
+          - CIDRIP : 172.31.0.0/16
+        GroupDescription: "Ingress Rule for DBSecurity"
+    RDSInstanceSecret:
+      Type: AWS::SecretsManager::Secret
+      Properties:
+        Description: 'This is the secret for my RDS instance'
+        Name: RDSInstanceSecret
+        GenerateSecretString:
+            SecretStringTemplate: '{"username": "admin"}'
+            GenerateStringKey: 'password'
+            PasswordLength: 16
+            ExcludeCharacters: '"@/\'
+    MySQL:
+      Type: AWS::RDS::DBInstance
+      DependsOn: RDSInstanceSecret
+      Properties:
+        DBName: workshop
+        DBInstanceClass: db.t2.micro
+        AllocatedStorage: 20
+        Engine: MySQL
+        EngineVersion: 8.0.16
+        MasterUsername: '{{resolve:secretsmanager:RDSInstanceSecret:SecretString:username}}'
+        MasterUserPassword: '{{resolve:secretsmanager:RDSInstanceSecret:SecretString:password}}'
+  
