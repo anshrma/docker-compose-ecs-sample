@@ -2,22 +2,14 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: This template will launch the CI/CD Pipeline for the Docker-AWS Workshop.
 
 Parameters:
-  ProjectName:
-    Type: String
-    Description: CI/CD for Docker-ECS Workshop
-    Default: docker-compose-workshop
   GitHubRepo:
     Type: String
     Description: The name of your GitHub repo that you are using for this workshop 
     Default: docker-compose-ecs-sample
-  FullRepoURL:
-    Type: String
-    Description: URL to your GitHub repo that you forked for this workshop 
-    Default: https://github.com/anshrma/docker-compose-ecs-sample
   GitHubOwner:
     Type: String
     Description: GitHub owner name
-    Default: "anshrma" 
+    Default: anshrma
 Resources: 
   ArtifactBucket:
     Type: AWS::S3::Bucket
@@ -112,9 +104,7 @@ Resources:
         Image: aws/codebuild/standard:5.0
         EnvironmentVariables:
         - Name: AWS_DEFAULT_REGION
-          Value: !Ref AWS::Region 
-        - Name: FULL_REPO_URL
-          Value: !Ref FullRepoURL
+          Value: !Ref AWS::Region
         PrivilegedMode: true
       Source:
         Location: webspec.yml
@@ -124,8 +114,8 @@ Resources:
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
-      Name: name
-      RoleArn: !Ref CodePipelineServiceRole
+      Name: !Sub ${AWS::Region}-${AWS::StackName}
+      RoleArn: !GetAtt CodePipelineServiceRole.Arn
       ArtifactStore:
         Type: S3
         Location: !Ref ArtifactBucket
@@ -143,7 +133,7 @@ Resources:
                 Repo: !Ref GitHubRepo 
                 Branch: main
                 PollForSourceChanges: false
-                OAuthToken: '{{resolve:secretsmanager:GitHub/WorkshopOwnerToken:SecretString:OwnerToken}}'
+                OAuthToken: '{{resolve:secretsmanager:github-oauth-token:SecretString:OAuthToken}}'
               OutputArtifacts:
                 - Name: SourceCode
               RunOrder: 1
@@ -168,7 +158,7 @@ Resources:
     Properties:
       Authentication: GITHUB_HMAC
       AuthenticationConfiguration:
-        SecretToken: '{{resolve:secretsmanager:GitHub/WorkshopOwnerToken:SecretString:OwnerToken}}'
+        SecretToken: '{{resolve:secretsmanager:github-oauth-token:SecretString:OAuthToken}}'
       RegisterWithThirdParty: true
       Filters:
       - JsonPath: "$.ref"
