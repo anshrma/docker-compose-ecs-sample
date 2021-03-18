@@ -154,11 +154,11 @@ Resources:
                 PULL_REQUEST_REOPENED, PULL_REQUEST_MERGED,
             - Type: BASE_REF
               Pattern: !Sub '^refs/heads/${GitHubBranch}$'
-          # - - Type: EVENT
-          #     Pattern: >-
-          #       PUSH
-          #   - Type: HEAD_REF
-          #     Pattern: !Sub '^refs/heads/${GitHubBranch}$'
+          - - Type: EVENT
+              Pattern: >-
+                PUSH
+            - Type: HEAD_REF
+              Pattern: '^refs/tags/.*'
 
       Environment:
         Type: LINUX_CONTAINER
@@ -168,7 +168,7 @@ Resources:
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
-      Name: name
+      Name: docker-pipeline
       RoleArn: !GetAtt 
         - CodePipelineServiceRole
         - Arn
