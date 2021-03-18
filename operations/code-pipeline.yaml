@@ -2,120 +2,170 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: This template will launch the CI/CD Pipeline for the Docker-AWS Workshop.
 
 Parameters:
-  GitHubRepo:
-    Type: String
-    Description: The name of your GitHub repo that you are using for this workshop 
-    Default: docker-compose-ecs-sample
   GitHubOwner:
     Type: String
-    Description: GitHub owner name
-    Default: anshrma
-Resources: 
+    AllowedPattern: '[A-Za-z0-9-]+'
+    Default: parkand1
+  GitHubRepository:
+    Type: String
+    AllowedPattern: '[A-Za-z0-9-]+'
+  GitHubBranch:
+    Type: String
+    AllowedPattern: '[A-Za-z0-9-]+'
+    Default: main
+  CodeBuildEnvironmentImage:
+    Type: String
+    Default: 'aws/codebuild/standard:5.0'
+  
+
+Resources:
+  CodeBuildServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: CloudWatchLogsPolicy
+                Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource:
+                  - '*'
+              - Sid: S3GetObjectPolicy
+                Effect: Allow
+                Action:
+                  - 's3:GetObject'
+                  - 's3:GetObjectVersion'
+                Resource:
+                  - '*'
+              - Sid: S3PutObjectPolicy
+                Effect: Allow
+                Action:
+                  - 's3:PutObject'
+                Resource:
+                  - '*'
+              - Sid: S3BucketIdentity
+                Effect: Allow
+                Action:
+                  - 's3:GetBucketAcl'
+                  - 's3:GetBucketLocation'
+                Resource:
+                  - '*'
+  
+  CodePipelineServiceRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: codepipeline.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        - PolicyName: root
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              - Sid: CloudWatchLogsPolicy
+                Effect: Allow
+                Action:
+                  - 'logs:CreateLogGroup'
+                  - 'logs:CreateLogStream'
+                  - 'logs:PutLogEvents'
+                Resource:
+                  - '*'
+              - Sid: S3GetObjectPolicy
+                Effect: Allow
+                Action:
+                  - 's3:GetObject'
+                  - 's3:GetObjectVersion'
+                Resource:
+                  - '*'
+              - Sid: S3PutObjectPolicy
+                Effect: Allow
+                Action:
+                  - 's3:PutObject'
+                Resource:
+                  - '*'
+              - Sid: S3BucketIdentity
+                Effect: Allow
+                Action:
+                  - 's3:GetBucketAcl'
+                  - 's3:GetBucketLocation'
+                Resource:
+                  - '*'
+              - Sid: CodeBuildPolicy
+                Action:
+                  - 'codebuild:BatchGetBuilds'
+                  - 'codebuild:StartBuild'
+                Resource: '*'
+                Effect: Allow
+   
   ArtifactBucket:
     Type: AWS::S3::Bucket
-    DeletionPolicy: Delete
-  CodeBuildServiceRole: 
-    Type: AWS::IAM::Role
-    Properties: 
-      AssumeRolePolicyDocument: 
-        Version: "2012-10-17"
-        Statement: 
-          - 
-            Effect: "Allow"
-            Principal: 
-              Service: 
-                - codebuild.amazonaws.com
-            Action: 
-              - "sts:AssumeRole"
-      Path: "/"
-  CodeBuildServiceRolePolicy: 
-    Type: AWS::IAM::Policy
-    DependsOn: ArtifactBucket
-    Properties: 
-      PolicyName: !Sub ${AWS::Region}-${AWS::StackName}-CodeBuildServiceRolePolicy
-      PolicyDocument: 
-        Version: "2012-10-17"
-        Statement: 
-          - Effect: Allow
-            Action: 
-              - logs:CreateLogGroup
-              - logs:CreateLogStream
-              - logs:PutLogEvent
-            Resource: "*"
-          - Effect: Allow
-            Action: 
-              - s3:GetObject
-              - s3:PutObject
-              - s3:GetObjectVersion
-            Resource: 
-              - !Sub arn:aws:s3:::${ArtifactBucket}/*
-      Roles: 
-        - Ref: CodeBuildServiceRole
-  CodePipelineServiceRole: 
-    Type: AWS::IAM::Role
-    Properties: 
-      AssumeRolePolicyDocument: 
-        Version: "2012-10-17"
-        Statement: 
-          - 
-            Effect: "Allow"
-            Principal: 
-              Service: 
-                - codepipeline.amazonaws.com
-            Action: 
-              - "sts:AssumeRole"
-      Path: "/"
-  CodePipelineServiceRolePolicy: 
-    Type: AWS::IAM::Policy
-    DependsOn: ArtifactBucket
-    Properties: 
-      PolicyName: !Sub ${AWS::Region}-${AWS::StackName}-CodePipelineServiceRolePolicy
-      PolicyDocument: 
-        Version: "2012-10-17"
-        Statement: 
-          - Effect: Allow
-            Action: 
-              - codebuild:StartBuild
-              - codebuild:BatchGetBuilds
-              - iam:PassRole
-            Resource: "*"
-          - Effect: Allow
-            Action: 
-              - s3:PutObject
-              - s3:GetObject
-              - s3:GetObjectVersion
-              - s3:GetBucketVersioning
-            Resource: 
-              - !Sub arn:aws:s3:::${ArtifactBucket}/*
-      Roles: 
-        - Ref: CodePipelineServiceRole
-  
-  CodeBuildProject:
-    Type: AWS::CodeBuild::Project
+    DeletionPolicy: Delete 
+
+  CodeBuildSourceCredential:
+    Type: 'AWS::CodeBuild::SourceCredential'
     Properties:
-      Name: docker-ecs-workshop
-      Description: A description about my project
-      ServiceRole: !Ref CodeBuildServiceRole
+      AuthType: PERSONAL_ACCESS_TOKEN
+      ServerType: GITHUB
+      Token: >-
+        {{resolve:secretsmanager:github-oauth-token:SecretString:GITHUB_ACCESS_TOKEN}}
+
+  CodeBuildProject:
+    Type: 'AWS::CodeBuild::Project'
+    Properties:
+      Name: !Ref 'AWS::StackName'
+      ServiceRole: !GetAtt 
+        - CodeBuildServiceRole
+        - Arn
+      Source:
+        Type: GITHUB
+        Location: !Sub 'https://github.com/${GitHubOwner}/${GitHubRepository}.git'
+        BuildSpec: buildspec.yaml
+        Auth:
+          Type: OAUTH
+          Resource: !Ref CodeBuildSourceCredential
       Artifacts:
-        Type: CODEPIPELINE 
+        Type: NO_ARTIFACTS
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - Type: EVENT
+              Pattern: >-
+                PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED,
+                PULL_REQUEST_REOPENED, PULL_REQUEST_MERGED,
+            - Type: BASE_REF
+              Pattern: !Sub '^refs/heads/${GitHubBranch}$'
+          # - - Type: EVENT
+          #     Pattern: >-
+          #       PUSH
+          #   - Type: HEAD_REF
+          #     Pattern: !Sub '^refs/heads/${GitHubBranch}$'
+
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: aws/codebuild/standard:5.0
-        EnvironmentVariables:
-        - Name: AWS_DEFAULT_REGION
-          Value: !Ref AWS::Region
-        PrivilegedMode: true
-      Source:
-        Location: webspec.yml
-        Type: CODEPIPELINE
-      TimeoutInMinutes: 10
+        Image: !Ref CodeBuildEnvironmentImage 
 
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
-      Name: !Sub ${AWS::Region}-${AWS::StackName}
-      RoleArn: !GetAtt CodePipelineServiceRole.Arn
+      Name: name
+      RoleArn: !Ref CodePipelineServiceRole
       ArtifactStore:
         Type: S3
         Location: !Ref ArtifactBucket
@@ -130,10 +180,10 @@ Resources:
                 Provider: GitHub 
               Configuration:
                 Owner: !Ref GitHubOwner
-                Repo: !Ref GitHubRepo 
+                Repo: !Ref GitHubRepository
                 Branch: main
                 PollForSourceChanges: false
-                OAuthToken: '{{resolve:secretsmanager:github-oauth-token:SecretString:OAuthToken}}'
+                OAuthToken: '{{resolve:secretsmanager:github-oauth-token:SecretString:GITHUB_ACCESS_TOKEN}}'
               OutputArtifacts:
                 - Name: SourceCode
               RunOrder: 1
@@ -153,20 +203,23 @@ Resources:
                 - Name: BuildOutput
               RunOrder: 1
   
-  GitHubWebHook:
-    Type: AWS::CodePipeline::Webhook
+  CodePipelineWebhook:
+    Type: 'AWS::CodePipeline::Webhook'
     Properties:
       Authentication: GITHUB_HMAC
       AuthenticationConfiguration:
-        SecretToken: '{{resolve:secretsmanager:github-oauth-token:SecretString:OAuthToken}}'
+        SecretToken: >-
+          {{resolve:secretsmanager:github-oauth-token:SecretString:GITHUB_ACCESS_TOKEN}}
       RegisterWithThirdParty: true
       Filters:
-      - JsonPath: "$.ref"
-        MatchEquals: refs/heads/{Branch} 
-      TargetPipeline: !Ref Pipeline
-      TargetAction: Source 
-      Name: MyWebhook 
+        - JsonPath: $.ref
+          MatchEquals: 'refs/heads/{Branch}'
+        - JsonPath: $.repository.name
+          MatchEquals: '{Repo}'
+      TargetPipeline: !Ref Pipeline 
+      TargetAction: Source
       TargetPipelineVersion: !GetAtt Pipeline.Version
+
 
 Outputs:
   PipelineUrl:
