@@ -1,0 +1,35 @@
+version: 0.2
+env:
+  variables:
+    DOCKER_HUB_REPO: ${DOCKER_HUB_REPO}
+    secrets-manager:
+      DOCKER_HUB_USERNAME: ${DOCKER_HUB_ID} 
+      DOCKER_HUB_PASSWORD: ${DOCKER_PULL_SECRETS_MANAGER}
+
+phases:
+  install:
+    runtime-versions:
+      docker: 20.10.5
+      docker compose: 1.28.5
+      docker-cli: 1.0.9
+  
+  pre_build:
+    commands:
+      - echo "Logging in to Docker Hub"
+      - docker login -u ${DOCKER_HUB_ID} --password ${DOCKER_PULL_SECRETS_MANAGER}
+      - echo "Create Docker ECS context"
+      - docker context create ecs ecs-workshop 
+      - echo "Change context to use ECS context"
+      - docker context use ecs-workshop
+
+  build:
+    commands:
+      - echo Build started on `date`
+      - DOCKER_HUB_ID=${DOCKER_HUB_ID} DOCKER_PULL_SECRETS_MANAGER=${DOCKER_PULL_SECRETS_MANAGER} RDS_ENDPOINT=${RDS_ENDPOINT} RDS_DB_SECRET_ARN=${RDS_DB_SECRET_ARN} docker compose -f docker-compose.yaml -f  docker-compose.prod.migrate.yaml -f docker-compose.prod.scaling.yaml -f docker-compose.prod.rds.yaml up
+      - echo "Tagging Docker image for Docker Hub"
+      - docker tag "insert image name here" ${DOCKER_HUB_REPO}:${CODEBUILD_SOURCE_VERSION}
+      - echo "Logging into Docker Hub"
+
+  post_build:
+    commands:
+      - echo "build successful"
