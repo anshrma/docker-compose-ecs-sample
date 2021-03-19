@@ -36,12 +36,35 @@ Resources:
           PolicyDocument:
             Version: 2012-10-17
             Statement:
+              - Sid: Route53Permissions
+                Effect: Allow
+                Action:
+                - 'route53:CreateHostedZone'
+                - 'route53:DeleteHostedZone'
+                - 'route53:GetHealthCheck'
+                - 'route53:GetHostedZone'
+                - 'route53:ListHostedZonesByName'
+                Resource:
+                  - '*'
+              - Sid: IAMRolePermissions
+                Effect: Allow
+                Action:
+                - 'iam:AttachRolePolicy'
+                - 'iam:CreateRole'
+                - 'iam:DeleteRole'
+                - 'iam:DetachRolePolicy'
+                - 'iam:PassRole'
+                Resource: 
+                  - '*'
               - Sid: CloudWatchLogsPolicy
                 Effect: Allow
                 Action:
                   - 'logs:CreateLogGroup'
                   - 'logs:CreateLogStream'
                   - 'logs:PutLogEvents'
+                  - 'logs:DescribeLogGroup'
+                  - 'logs:FilterLogEvents'
+                  - 'logs:DeleteLogGroup'
                 Resource:
                   - '*'
               - Sid: S3GetObjectPolicy
@@ -62,6 +85,92 @@ Resources:
                 Action:
                   - 's3:GetBucketAcl'
                   - 's3:GetBucketLocation'
+                Resource:
+                  - '*'
+              - Sid: EC2SecurityGroup
+                Effect: Allow
+                Action:
+                - 'ec2:RevokeSecurityGroupIngress'
+                - 'ec2:AuthorizeSecurityGroupIngress'
+                - 'ec2:CreateSecurityGroup'
+                - 'ec2:DeleteSecurityGroup'
+                Resource:
+                  - '*'
+              - Sid: EC2DescribeResources
+                Effect: Allow
+                Action:
+                - 'ec2:DescribeVpcs'
+                - 'ec2:DescribeSubnets'
+                - 'ec2:DescribeRouteTables'
+                - 'ec2:DescribeSecurityGroups'
+                Resource:
+                  - '*'
+              - Sid: EC2CreateTags
+                Effect: Allow
+                Action:
+                - 'ec2:CreateTags'
+                Resource: 
+                  - "*"
+              - Sid: ECSClusterPermissions
+                Effect: Allow
+                Action: 
+                - 'ecs:CreateCluster'
+                - 'ecs:CreateService'
+                - 'ecs:DeleteCluster'
+                - 'ecs:DescribeClusters' 
+                Resource:
+                  - '*'
+              - Sid: ECSServicePermissions
+                Effect: Allow
+                Action:
+                - 'ecs:DeleteService'
+                - 'ecs:DescribeServices'
+                - 'ecs:UpdateService'
+                Resource:
+                  - '*'
+              - Sid: ECSTaskPermissions
+                Effect: Allow 
+                Action:
+                - 'ecs:DescribeTasks'
+                - 'ecs:ListTasks'
+                - 'ecs:RegisterTaskDefinition'
+                - 'ecs:DeregisterTaskDefinition'
+                Resource:
+                  - '*'
+              - Sid: ECSAccountPermissions
+                Effect: Allow
+                Action:
+                - 'ecs:ListAccountSettings'
+                Resource:
+                  - '*'
+              - Sid: CloudFormationPermissions
+                Effect: Allow
+                Action:
+                - 'cloudformation:*'
+                Resource:
+                  - '*'
+              - Sid: ELBAccess
+                Effect: Allow
+                Action:
+                - 'elasticloadbalancing:*'
+                Resource:
+                  - '*'
+              - Sid: ServiceDiscoveryAccess
+                Effect: Allow
+                Action:
+                - 'servicediscovery:*'
+                Resource:
+                  - '*'
+              - Sid: AutoscaleAccess
+                Effect: Allow
+                Action: 
+                - 'application-autoscaling:*'
+                Resource:
+                  - '*'
+              - Sid: RDSAccess
+                Effect: Allow
+                Action:
+                - 'rds:*'
                 Resource:
                   - '*'
   
@@ -116,7 +225,7 @@ Resources:
                   - 'codebuild:StartBuild'
                 Resource: '*'
                 Effect: Allow
-   
+
   ArtifactBucket:
     Type: AWS::S3::Bucket
     DeletionPolicy: Delete 
@@ -159,7 +268,6 @@ Resources:
                 PUSH
             - Type: HEAD_REF
               Pattern: '^refs/tags/.*'
-
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
