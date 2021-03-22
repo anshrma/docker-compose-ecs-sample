@@ -379,7 +379,7 @@ Resources:
           Actions:
             - Name: Deploy
               ActionTypeId:
-                Category: Deploy
+                Category: Build
                 Owner: AWS
                 Version: '1'
                 Provider: CodeBuild
