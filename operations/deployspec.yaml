@@ -27,7 +27,7 @@ phases:
       - echo Logging in to Docker Hub...
       - docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
       - echo "Create Docker ECS context"
-      - docker/docker context create ecs ecs-workshop 
+      - docker/docker context create ecs ecs-workshop --from-env
       - echo "Change context to use ECS context"
       - docker/docker context use ecs-workshop
 
