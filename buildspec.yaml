@@ -19,6 +19,8 @@ phases:
       - docker/docker compose --help
       - which docker
       - ln -s $(which docker) /usr/local/bin/com.docker.cli
+      - mv docker/docker $(which docker)
+      - docker --context default ps
   pre_build:
     commands:
       - echo Logging in to Docker Hub...
