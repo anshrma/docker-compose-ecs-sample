@@ -172,6 +172,7 @@ Resources:
                 Effect: Allow
                 Action:
                 - 'rds:*'
+                - secretsmanager:GetSecretValue
                 Resource:
                   - '*'
   
