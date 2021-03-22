@@ -19,11 +19,14 @@ phases:
       - docker/docker compose --help
       - which docker
       - docker version
+    # anshrma : following results in error as 
+    # Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
+    #[Container] 2021/03/22 22:13:24 Command did not exit successfully docker version exit status 1
+    #[Container] 2021/03/22 22:13:24 Phase complete: INSTALL State: FAILED
       # - mv docker/docker $(which docker)
       # - docker version
       #- ln -s $(which docker) /usr/local/bin/com.docker.cli
       #- mv docker/docker $(which docker)
-      #- docker/docker --context default ps
   pre_build:
     commands:
       - echo Logging in to Docker Hub...
