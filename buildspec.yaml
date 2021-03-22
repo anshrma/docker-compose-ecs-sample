@@ -41,10 +41,10 @@ phases:
       - echo Build started on `date`
       - docker-compose build
       - echo "Tagging Docker image for Docker Hub"
-      - docker tag docker-compose-ecs-sample_backend:latest ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_backend:${CODEBUILD_SOURCE_VERSION}
-      - docker tag docker-compose-ecs-sample_frontend:latest ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_frontend:${CODEBUILD_SOURCE_VERSION}
-      - docker push ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_backend:${CODEBUILD_SOURCE_VERSION}
-      - docker push ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_frontend:${CODEBUILD_SOURCE_VERSION}
+      - docker tag docker-compose-ecs-sample_backend:latest ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_backend:${CODEBUILD_RESOLVED_SOURCE_VERSION}
+      - docker tag docker-compose-ecs-sample_frontend:latest ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_frontend:${CODEBUILD_RESOLVED_SOURCE_VERSION}
+      - docker push ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_backend:${CODEBUILD_RESOLVED_SOURCE_VERSION}
+      - docker push ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_frontend:${CODEBUILD_RESOLVED_SOURCE_VERSION}
   
   post_build:
     commands:
