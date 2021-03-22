@@ -1,9 +1,9 @@
 version: 0.2
-env:
-  #variables:
-  secrets-manager:
-    DOCKERHUB_USERNAME: '$DOCKER_PULL_SECRETS_MANAGER'
-    DOCKERHUB_PASSWORD: '$DOCKER_PULL_SECRETS_MANAGER' 
+# env:
+#   #variables:
+#   secrets-manager:
+#     DOCKERHUB_USERNAME: '$DOCKER_PULL_SECRETS_MANAGER'
+#     DOCKERHUB_PASSWORD: '$DOCKER_PULL_SECRETS_MANAGER' 
 
 phases:
   install:
@@ -20,22 +20,22 @@ phases:
   pre_build:
     commands:
       - echo Logging in to Docker Hub...
-      - docker --version 
-      - docker compose --version 
-      - echo $DOCKERHUB_PASSWORD | docker login --username $DOCKERHUB_USERNAME --password-stdin
-      - echo "Create Docker ECS context"
-      - docker context create ecs ecs-workshop 
-      - echo "Change context to use ECS context"
-      - docker context use ecs-workshop
+      - docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
+      # - echo "Create Docker ECS context"
+      # - docker context create ecs ecs-workshop 
+      # - echo "Change context to use ECS context"
+      # - docker context use ecs-workshop
 
   build:
     commands:
       - echo Build started on `date`
-      - DOCKER_HUB_ID=${DOCKER_HUB_ID} DOCKER_PULL_SECRETS_MANAGER=${DOCKER_PULL_SECRETS_MANAGER} RDS_ENDPOINT=${RDS_ENDPOINT} RDS_DB_SECRET_ARN=${RDS_DB_SECRET_ARN} docker compose -f docker-compose.yaml -f  docker-compose.prod.migrate.yaml -f docker-compose.prod.scaling.yaml -f docker-compose.prod.rds.yaml up
+      - docker/docker compose build
       - echo "Tagging Docker image for Docker Hub"
-      - docker tag "insert image name here" ${DOCKER_HUB_REPO}:${CODEBUILD_SOURCE_VERSION}
+      - docker tag docker-compose-ecs-sample_backend:latest ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_backend:${CODEBUILD_SOURCE_VERSION}
+      - docker tag docker-compose-ecs-sample_frontend:latest ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_frontend:${CODEBUILD_SOURCE_VERSION}
+      - docker push ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_backend:${CODEBUILD_SOURCE_VERSION}
+      - docker push ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_frontend:${CODEBUILD_SOURCE_VERSION}
   
-
   post_build:
     commands:
       - echo "build successful"
