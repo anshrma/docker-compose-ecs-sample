@@ -10,18 +10,12 @@ phases:
     runtime-versions:
       python: 3.8
     commands:
+      - printenv
       - echo "Performing manual install of compose cli"
-      - curl -L https://github.com/docker/compose-cli/releases/download/v1.0.10/docker-linux-amd64.tar.gz | sh
+      - curl -O https://github.com/docker/compose-cli/releases/download/v1.0.10/docker-linux-amd64.tar.gz
       - tar xzf docker-linux-amd64.tar.gz
-      - echo $PATH
-      - which docker
-      - ln -s /usr/bin/docker /usr/local/bin/com.docker.cli
-      - mv docker/docker /usr/local/bin/docker
-      - which docker
-      - docker version
-      # - echo "Starting the installation of compose CLI in GO"
-      # - curl -L https://raw.githubusercontent.com/docker/compose-cli/main/scripts/install/install_linux.sh | sh
-      # - docker compose --help
+      - chmod +x docker/docker
+      - ls -ltr
   pre_build:
     commands:
       - echo Logging in to Docker Hub...

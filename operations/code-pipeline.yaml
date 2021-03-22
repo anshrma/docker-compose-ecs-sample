@@ -5,17 +5,15 @@ Parameters:
   GitHubOwner:
     Type: String
     AllowedPattern: '[A-Za-z0-9-]+'
-    Default: parkand1
+    Default: anshrma
   GitHubRepository:
     Type: String
     AllowedPattern: '[A-Za-z0-9-]+'
+    Default: docker-compose-ecs-sample
   GitHubBranch:
     Type: String
     AllowedPattern: '[A-Za-z0-9-]+'
     Default: main
-  CodeBuildEnvironmentImage:
-    Type: String
-    Default: 'aws/codebuild/standard:5.0'
   
 
 Resources:
@@ -271,7 +269,7 @@ Resources:
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: !Ref CodeBuildEnvironmentImage
+        Image: 'aws/codebuild/standard:5.0'
         EnvironmentVariables:
           - Name: DOCKERHUB_USERNAME
             Type: SECRETS_MANAGER 
