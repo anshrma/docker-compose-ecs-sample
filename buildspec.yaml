@@ -19,8 +19,8 @@ phases:
       - docker/docker compose --help
       - which docker
       - docker version
-      - mv docker/docker $(which docker)
-      - docker version
+      # - mv docker/docker $(which docker)
+      # - docker version
       #- ln -s $(which docker) /usr/local/bin/com.docker.cli
       #- mv docker/docker $(which docker)
       #- docker/docker --context default ps
@@ -36,7 +36,7 @@ phases:
   build:
     commands:
       - echo Build started on `date`
-      - docker compose build
+      - docker-compose build
       - echo "Tagging Docker image for Docker Hub"
       - docker tag docker-compose-ecs-sample_backend:latest ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_backend:${CODEBUILD_SOURCE_VERSION}
       - docker tag docker-compose-ecs-sample_frontend:latest ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_frontend:${CODEBUILD_SOURCE_VERSION}
