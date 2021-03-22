@@ -271,8 +271,14 @@ Resources:
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
-        Image: !Ref CodeBuildEnvironmentImage 
-
+        Image: !Ref CodeBuildEnvironmentImage
+        EnvironmentVariables:
+          - Name: DOCKERHUB_USERNAME
+            Type: SECRETS_MANAGER 
+            Value: $DOCKER_PULL_SECRETS_MANAGER
+          - Name: DOCKERHUB_PASSWORD
+            Type: SECRETS_MANAGER
+            Value: $DOCKER_PULL_SECRETS_MANAGER
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
