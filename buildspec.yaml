@@ -37,8 +37,8 @@ phases:
       - docker/docker compose build
       - echo "Tagging Docker image for Docker Hub"
       - docker images
-      - docker tag docker-compose-ecs-sample_backend:latest ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_backend:${CODEBUILD_RESOLVED_SOURCE_VERSION}
-      - docker tag docker-compose-ecs-sample_frontend:latest ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_frontend:${CODEBUILD_RESOLVED_SOURCE_VERSION}
+      - docker tag src_backend:latest ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_backend:${CODEBUILD_RESOLVED_SOURCE_VERSION}
+      - docker tag src_frontend:latest ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_frontend:${CODEBUILD_RESOLVED_SOURCE_VERSION}
       - docker push ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_backend:${CODEBUILD_RESOLVED_SOURCE_VERSION}
       - docker push ${DOCKERHUB_USERNAME}/docker-compose-ecs-sample_frontend:${CODEBUILD_RESOLVED_SOURCE_VERSION}
   
