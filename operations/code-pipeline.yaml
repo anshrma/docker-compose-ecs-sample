@@ -250,7 +250,7 @@ Resources:
       Source:
         Type: GITHUB
         Location: !Sub 'https://github.com/${GitHubOwner}/${GitHubRepository}.git'
-        BuildSpec: buildspec.yaml
+        BuildSpec: operations/buildspec.yaml
         Auth:
           Type: OAUTH
           Resource: !Ref CodeBuildSourceCredential
@@ -282,6 +282,56 @@ Resources:
           - Name: DOCKERHUB_PASSWORD
             Type: SECRETS_MANAGER
             Value: !Sub ${DockerPullSecretsManagerArn}:password
+
+  CodeBuildDeployProject:
+    Type: 'AWS::CodeBuild::Project'
+    Properties:
+      Name: !Sub ${AWS::StackName}-deploy
+      ServiceRole: !GetAtt 
+        - CodeBuildServiceRole
+        - Arn
+      Source:
+        Type: GITHUB
+        Location: !Sub 'https://github.com/${GitHubOwner}/${GitHubRepository}.git'
+        BuildSpec: operations/deployspec.yaml
+        Auth:
+          Type: OAUTH
+          Resource: !Ref CodeBuildSourceCredential
+      Artifacts:
+        Type: NO_ARTIFACTS
+      Triggers:
+        Webhook: true
+        FilterGroups:
+          - - Type: EVENT
+              Pattern: >-
+                PULL_REQUEST_CREATED, PULL_REQUEST_UPDATED,
+                PULL_REQUEST_REOPENED, PULL_REQUEST_MERGED,
+            - Type: BASE_REF
+              Pattern: !Sub '^refs/heads/${GitHubBranch}$'
+          - - Type: EVENT
+              Pattern: >-
+                PUSH
+            - Type: HEAD_REF
+              Pattern: '^refs/tags/.*'
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: 'aws/codebuild/standard:5.0'
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - Name: DOCKERHUB_USERNAME
+            Type: SECRETS_MANAGER 
+            Value: !Sub ${DockerPullSecretsManagerArn}:username
+          - Name: DOCKERHUB_PASSWORD
+            Type: SECRETS_MANAGER
+            Value: !Sub ${DockerPullSecretsManagerArn}:password
+          - Name: DOCKER_PULL_SECRETS_MANAGER
+            Type: PLAINTEXT
+            Value: !Ref ${DockerPullSecretsManagerArn}
+          - Name: STACK_NAME
+            Type: PLAINTEXT
+            Value: !Ref ${AWS::StackName}
+
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
@@ -324,6 +374,21 @@ Resources:
                 - Name: SourceCode
               OutputArtifacts:
                 - Name: BuildOutput
+              RunOrder: 1
+        - Name: Deploy
+          Actions:
+            - Name: Deploy
+              ActionTypeId:
+                Category: Deploy
+                Owner: AWS
+                Version: '1'
+                Provider: CodeBuild
+              Configuration:
+                ProjectName: !Ref CodeBuildDeployProject
+              InputArtifacts:
+                - Name: SourceCode
+              OutputArtifacts:
+                - Name: DeployOutput
               RunOrder: 1
   
   CodePipelineWebhook:
