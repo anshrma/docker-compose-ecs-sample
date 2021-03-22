@@ -16,7 +16,7 @@ phases:
       - tar xzf docker-linux-amd64.tar.gz
       - chmod +x docker/docker
       - ls -ltr
-      - ./docker/docker compose --help
+      - docker/docker compose --help
   pre_build:
     commands:
       - echo Logging in to Docker Hub...
