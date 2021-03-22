@@ -9,16 +9,16 @@ phases:
   install:
     runtime-versions:
       python: 3.8
-    commands:
-      - printenv
-      - echo "Performing manual install of compose cli"
-      - curl -L -o docker-linux-amd64.tar.gz https://github.com/docker/compose-cli/releases/download/v1.0.10/docker-linux-amd64.tar.gz
-      - tar xzf docker-linux-amd64.tar.gz
-      - chmod +x docker/docker
-      - ls -ltr
-      - docker/docker compose --help
-      - which docker
-      - docker version
+    # commands:
+    #   - printenv
+    #   - echo "Performing manual install of compose cli"
+    #   - curl -L -o docker-linux-amd64.tar.gz https://github.com/docker/compose-cli/releases/download/v1.0.10/docker-linux-amd64.tar.gz
+    #   - tar xzf docker-linux-amd64.tar.gz
+    #   - chmod +x docker/docker
+    #   - ls -ltr
+    #   - docker/docker compose --help
+    #   - which docker
+    #   - docker version
     # anshrma : following results in error as 
     # Cannot connect to the Docker daemon at unix:///var/run/docker.sock. Is the docker daemon running?
     #[Container] 2021/03/22 22:13:24 Command did not exit successfully docker version exit status 1
