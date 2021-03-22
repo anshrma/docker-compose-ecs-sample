@@ -33,7 +33,7 @@ phases:
 
   build:
     commands:
-      - DOCKER_HUB_ID=${DOCKERHUB_USERNAME} DOCKER_PULL_SECRETS_MANAGER=${DOCKER_PULL_SECRETS_MANAGER} docker compose -f docker-compose.yaml -f  docker-compose.prod.migrate.yaml -p ${STACK_NAME} up
+      - DOCKER_HUB_ID=${DOCKERHUB_USERNAME} DOCKER_PULL_SECRETS_MANAGER=${DOCKER_PULL_SECRETS_MANAGER} docker/docker compose -f docker-compose.yaml -f  docker-compose.prod.migrate.yaml -p ${STACK_NAME} up
   
   post_build:
     commands:
