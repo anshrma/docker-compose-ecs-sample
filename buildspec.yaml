@@ -18,6 +18,7 @@ phases:
       - ls -ltr
       - docker/docker compose --help
       - which docker
+      - ln -s $(which docker) /usr/local/bin/com.docker.cli
       - docker version
       - mv docker/docker $(which docker)
       - docker version
