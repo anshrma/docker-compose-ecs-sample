@@ -327,10 +327,10 @@ Resources:
             Value: !Sub ${DockerPullSecretsManagerArn}:password
           - Name: DOCKER_PULL_SECRETS_MANAGER
             Type: PLAINTEXT
-            Value: !Ref ${DockerPullSecretsManagerArn}
+            Value: !Ref DockerPullSecretsManagerArn
           - Name: STACK_NAME
             Type: PLAINTEXT
-            Value: !Ref ${AWS::StackName}
+            Value: !Ref AWS::StackName
 
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
