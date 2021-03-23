@@ -29,6 +29,7 @@ phases:
       - STS_RESPONSE=$(curl 169.254.170.2$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI)
       - AWS_ACCESS_KEY_ID=$(echo $STS_RESPONSE | jq .AccessKeyId)
       - AWS_SECRET_ACCESS_KEY=$(echo $STS_RESPONSE | jq .SecretAccessKey)
+      - AWS_SESSION_TOKEN=$(echo $STS_RESPONSE | jq .Token)
       - echo "Create Docker ECS context"
       - docker/docker context create ecs ecs-workshop --from-env
       - echo "Change context to use ECS context"
