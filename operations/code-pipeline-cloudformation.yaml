@@ -151,7 +151,6 @@ Resources:
                 Effect: Allow
                 Action:
                 - 'cloudformation:*'
-                - sts:GetSessionToken
                 Resource:
                   - '*'
               - Sid: ELBAccess
@@ -339,7 +338,7 @@ Resources:
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
     Properties:
-      Name: docker-pipeline
+      Name: !Ref AWS::StackName
       RoleArn: !GetAtt 
         - CodePipelineServiceRole
         - Arn
