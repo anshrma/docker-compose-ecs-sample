@@ -1,16 +1,9 @@
 version: 0.2
-# env:
-#   #variables:
-#   secrets-manager:
-#     DOCKERHUB_USERNAME: '$DOCKER_PULL_SECRETS_MANAGER'
-#     DOCKERHUB_PASSWORD: '$DOCKER_PULL_SECRETS_MANAGER' 
-
 phases:
   install:
     runtime-versions:
       python: 3.8
     commands:
-      - printenv
       - echo "Performing manual install of compose cli"
       - curl -L -o docker-linux-amd64.tar.gz https://github.com/docker/compose-cli/releases/download/v1.0.10/docker-linux-amd64.tar.gz
       - tar xzf docker-linux-amd64.tar.gz
@@ -19,21 +12,14 @@ phases:
       - docker/docker compose --help
       - which docker
       - ln -s $(which docker) /usr/local/bin/com.docker.cli
-      - docker version
-      # - mv docker/docker $(which docker)
-      # - docker version
   pre_build:
     commands:
       - echo Logging in to Docker Hub...
       - docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
       - STS_RESPONSE=$(curl 169.254.170.2$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI)
-      - echo $STS_RESPONSE
       - export AWS_ACCESS_KEY_ID=$(echo $STS_RESPONSE | jq .AccessKeyId | tr -d \")
       - export AWS_SECRET_ACCESS_KEY=$(echo $STS_RESPONSE | jq .SecretAccessKey | tr -d \")
       - export AWS_SESSION_TOKEN=$(echo $STS_RESPONSE | jq .Token | tr -d \")
-      - echo $AWS_SESSION_TOKEN
-      - echo $AWS_SECRET_ACCESS_KEY
-      - echo $AWS_ACCESS_KEY_ID
       - echo "Create Docker ECS context"
       - docker/docker context create ecs ecs-workshop --from-env
       - aws sts get-caller-identity

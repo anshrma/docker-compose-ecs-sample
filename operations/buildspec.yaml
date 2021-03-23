@@ -1,16 +1,9 @@
 version: 0.2
-# env:
-#   #variables:
-#   secrets-manager:
-#     DOCKERHUB_USERNAME: '$DOCKER_PULL_SECRETS_MANAGER'
-#     DOCKERHUB_PASSWORD: '$DOCKER_PULL_SECRETS_MANAGER' 
-
 phases:
   install:
     runtime-versions:
       python: 3.8
     commands:
-      - printenv
       - echo "Performing manual install of compose cli"
       - curl -L -o docker-linux-amd64.tar.gz https://github.com/docker/compose-cli/releases/download/v1.0.10/docker-linux-amd64.tar.gz
       - tar xzf docker-linux-amd64.tar.gz
@@ -19,17 +12,10 @@ phases:
       - docker/docker compose --help
       - which docker
       - ln -s $(which docker) /usr/local/bin/com.docker.cli
-      - docker version
-      # - mv docker/docker $(which docker)
-      # - docker version
   pre_build:
     commands:
       - echo Logging in to Docker Hub...
       - docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
-      # - echo "Create Docker ECS context"
-      # - docker context create ecs ecs-workshop 
-      # - echo "Change context to use ECS context"
-      # - docker context use ecs-workshop
 
   build:
     commands:
