@@ -36,6 +36,7 @@ phases:
       - echo $AWS_ACCESS_KEY_ID
       - echo "Create Docker ECS context"
       - docker/docker context create ecs ecs-workshop --from-env
+      - aws sts get-caller-identity
       - echo "Change context to use ECS context"
       - docker/docker context use ecs-workshop
 
