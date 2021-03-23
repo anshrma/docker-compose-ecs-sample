@@ -246,7 +246,7 @@ Resources:
   CodeBuildProject:
     Type: 'AWS::CodeBuild::Project'
     Properties:
-      Name: !Ref 'AWS::StackName'
+      Name: !Sub ${AWS::StackName}-codebuild-project
       ServiceRole: !GetAtt 
         - CodeBuildServiceRole
         - Arn
@@ -289,7 +289,7 @@ Resources:
   CodeBuildDeployProject:
     Type: 'AWS::CodeBuild::Project'
     Properties:
-      Name: !Sub ${AWS::StackName}-deploy
+      Name: !Sub ${AWS::StackName}-deploy-project
       ServiceRole: !GetAtt 
         - CodeBuildServiceRole
         - Arn

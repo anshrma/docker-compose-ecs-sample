@@ -28,9 +28,12 @@ phases:
       - docker login --username $DOCKERHUB_USERNAME --password $DOCKERHUB_PASSWORD
       - STS_RESPONSE=$(curl 169.254.170.2$AWS_CONTAINER_CREDENTIALS_RELATIVE_URI)
       - echo $STS_RESPONSE
-      - AWS_ACCESS_KEY_ID=$(echo $STS_RESPONSE | jq .AccessKeyId)
-      - AWS_SECRET_ACCESS_KEY=$(echo $STS_RESPONSE | jq .SecretAccessKey)
-      - AWS_SESSION_TOKEN=$(echo $STS_RESPONSE | jq .Token)
+      - export AWS_ACCESS_KEY_ID=$(echo $STS_RESPONSE | jq .AccessKeyId)
+      - export AWS_SECRET_ACCESS_KEY=$(echo $STS_RESPONSE | jq .SecretAccessKey)
+      - export AWS_SESSION_TOKEN=$(echo $STS_RESPONSE | jq .Token)
+      - echo $AWS_SESSION_TOKEN
+      - echo $AWS_SECRET_ACCESS_KEY
+      - echo $AWS_ACCESS_KEY_ID
       - echo "Create Docker ECS context"
       - docker/docker context create ecs ecs-workshop --from-env
       - echo "Change context to use ECS context"
