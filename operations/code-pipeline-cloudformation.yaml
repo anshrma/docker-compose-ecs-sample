@@ -40,16 +40,6 @@ Resources:
           PolicyDocument:
             Version: 2012-10-17
             Statement:
-              - Sid: Route53Permissions
-                Effect: Allow
-                Action:
-                - 'route53:CreateHostedZone'
-                - 'route53:DeleteHostedZone'
-                - 'route53:GetHealthCheck'
-                - 'route53:GetHostedZone'
-                - 'route53:ListHostedZonesByName'
-                Resource:
-                  - '*'
               - Sid: IAMRolePermissions
                 Effect: Allow
                 Action:
@@ -76,106 +66,23 @@ Resources:
                 Action:
                   - 's3:GetObject'
                   - 's3:GetObjectVersion'
-                Resource:
-                  - '*'
-              - Sid: S3PutObjectPolicy
-                Effect: Allow
-                Action:
-                  - 's3:PutObject'
-                Resource:
-                  - '*'
-              - Sid: S3BucketIdentity
-                Effect: Allow
-                Action:
                   - 's3:GetBucketAcl'
                   - 's3:GetBucketLocation'
-                Resource:
-                  - '*'
-              - Sid: EC2SecurityGroup
-                Effect: Allow
-                Action:
-                - 'ec2:RevokeSecurityGroupIngress'
-                - 'ec2:AuthorizeSecurityGroupIngress'
-                - 'ec2:CreateSecurityGroup'
-                - 'ec2:DeleteSecurityGroup'
-                Resource:
-                  - '*'
-              - Sid: EC2DescribeResources
-                Effect: Allow
-                Action:
-                - 'ec2:DescribeVpcs'
-                - 'ec2:DescribeSubnets'
-                - 'ec2:DescribeRouteTables'
-                - 'ec2:DescribeSecurityGroups'
-                Resource:
-                  - '*'
-              - Sid: EC2CreateTags
-                Effect: Allow
-                Action:
-                - 'ec2:CreateTags'
-                Resource: 
-                  - "*"
-              - Sid: ECSClusterPermissions
-                Effect: Allow
-                Action: 
-                - 'ecs:CreateCluster'
-                - 'ecs:CreateService'
-                - 'ecs:DeleteCluster'
-                - 'ecs:DescribeClusters' 
-                Resource:
-                  - '*'
-              - Sid: ECSServicePermissions
-                Effect: Allow
-                Action:
-                - 'ecs:DeleteService'
-                - 'ecs:DescribeServices'
-                - 'ecs:UpdateService'
-                Resource:
-                  - '*'
-              - Sid: ECSTaskPermissions
-                Effect: Allow 
-                Action:
-                - 'ecs:DescribeTasks'
-                - 'ecs:ListTasks'
-                - 'ecs:RegisterTaskDefinition'
-                - 'ecs:DeregisterTaskDefinition'
-                Resource:
-                  - '*'
-              - Sid: ECSAccountPermissions
-                Effect: Allow
-                Action:
-                - 'ecs:ListAccountSettings'
-                Resource:
-                  - '*'
-              - Sid: CloudFormationPermissions
-                Effect: Allow
-                Action:
-                - 'cloudformation:*'
-                Resource:
-                  - '*'
-              - Sid: ELBAccess
-                Effect: Allow
-                Action:
-                - 'elasticloadbalancing:*'
-                Resource:
-                  - '*'
-              - Sid: ServiceDiscoveryAccess
-                Effect: Allow
-                Action:
-                - 'servicediscovery:*'
-                Resource:
-                  - '*'
-              - Sid: AutoscaleAccess
-                Effect: Allow
-                Action: 
-                - 'application-autoscaling:*'
+                  - 's3:PutObject'
                 Resource:
                   - '*'
               - Sid: RDSAccess
                 Effect: Allow
                 Action:
-                - 'rds:*'
+                - rds:*
                 - secretsmanager:GetSecretValue
+                - ec2:*
+                - ecs:*
+                - cloudformation:*
+                - servicediscovery:*
+                - application-autoscaling:*
+                - elasticloadbalancing:*
+                - route53:*
                 Resource:
                   - '*'
   
