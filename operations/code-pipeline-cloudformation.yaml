@@ -2,6 +2,9 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: This template will launch the CI/CD Pipeline for the Docker-AWS Workshop.
 
 Parameters:
+  ProjectName:
+    Type: String
+    Default: docker-compose-ecs-sample
   GitHubOwner:
     Type: String
     AllowedPattern: '[A-Za-z0-9-]+'
@@ -148,6 +151,7 @@ Resources:
                 Effect: Allow
                 Action:
                 - 'cloudformation:*'
+                - sts:GetSessionToken
                 Resource:
                   - '*'
               - Sid: ELBAccess
@@ -328,9 +332,9 @@ Resources:
           - Name: DOCKER_PULL_SECRETS_MANAGER
             Type: PLAINTEXT
             Value: !Ref DockerPullSecretsManagerArn
-          - Name: STACK_NAME
+          - Name: PROJECT_NAME
             Type: PLAINTEXT
-            Value: !Ref AWS::StackName
+            Value: !Ref ProjectName
 
   Pipeline:
     Type: AWS::CodePipeline::Pipeline
