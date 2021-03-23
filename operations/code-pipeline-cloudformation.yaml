@@ -40,16 +40,6 @@ Resources:
           PolicyDocument:
             Version: 2012-10-17
             Statement:
-              - Sid: IAMRolePermissions
-                Effect: Allow
-                Action:
-                - 'iam:AttachRolePolicy'
-                - 'iam:CreateRole'
-                - 'iam:DeleteRole'
-                - 'iam:DetachRolePolicy'
-                - 'iam:PassRole'
-                Resource: 
-                  - '*'
               - Sid: CloudWatchLogsPolicy
                 Effect: Allow
                 Action:
@@ -75,7 +65,7 @@ Resources:
                 Effect: Allow
                 Action:
                 - rds:*
-                - secretsmanager:GetSecretValue
+                - secretsmanager:*
                 - ec2:*
                 - ecs:*
                 - cloudformation:*
@@ -83,6 +73,8 @@ Resources:
                 - application-autoscaling:*
                 - elasticloadbalancing:*
                 - route53:*
+                - elasticfilesystem:*
+                - iam:*
                 Resource:
                   - '*'
   
