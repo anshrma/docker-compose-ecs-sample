@@ -75,6 +75,7 @@ Resources:
                 - route53:*
                 - elasticfilesystem:*
                 - iam:*
+                - efs:*
                 Resource:
                   - '*'
   
