@@ -24,10 +24,11 @@ x-aws-cloudformation:
         - Endpoint.Address
   Resources:
     DBSecurityGroup:
-      Type: AWS::RDS::DBSecurityGroup
+      Type: AWS::EC2::SecurityGroup
       Properties: 
-        DBSecurityGroupIngress: 
-          - CIDRIP : 172.31.0.0/16
+        SecurityGroupIngress: 
+          - IpProtocol: "-1"
+            CidrIp : 172.31.0.0/16
         GroupDescription: "Ingress Rule for DBSecurity"
     RDSInstanceSecret:
       Type: AWS::SecretsManager::Secret
@@ -43,6 +44,10 @@ x-aws-cloudformation:
       Type: AWS::RDS::DBInstance
       DependsOn: RDSInstanceSecret
       Properties:
+        VPCSecurityGroups:
+          - Fn::GetAtt : 
+            - DBSecurityGroup
+            - GroupId
         DBName: workshop
         DBInstanceClass: db.t2.micro
         AllocatedStorage: 20
