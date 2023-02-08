@@ -52,7 +52,7 @@ x-aws-cloudformation:
         DBInstanceClass: db.t2.micro
         AllocatedStorage: 20
         Engine: MySQL
-        EngineVersion: 8.0.16
+        EngineVersion: 8.0.23
         MasterUsername: '{{resolve:secretsmanager:RDSInstanceSecret:SecretString:username}}'
         MasterUserPassword: '{{resolve:secretsmanager:RDSInstanceSecret:SecretString:password}}'
   

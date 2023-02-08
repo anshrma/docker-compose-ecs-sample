@@ -5,6 +5,7 @@ services:
         - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db-password
         - MY_SQL_HOST=${RDS_ENDPOINT}
         - MY_SQL_USER=admin
+        - DB_TYPE=rds
 
 secrets:
   db-password:
