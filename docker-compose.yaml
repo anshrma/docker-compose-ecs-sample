@@ -25,6 +25,8 @@ services:
       - frontnet
     depends_on:
       - db
+    environment:
+      - DB_TYPE=docker
   frontend:
     build: 
       context: ./frontend
